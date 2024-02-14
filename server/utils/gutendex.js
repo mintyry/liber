@@ -15,7 +15,7 @@ module.exports = async function fetchData() {
           for (let i = 0; i < response.data.results.length; i++) {
             const bookData = response.data.results[i];
             const bookId = bookData.id;
-            let title = bookData.title;
+            const title = bookData.title;
             // we dont need to make an authors line, because it comes back properly via authors schema in model
             const imageUrl = bookData.formats['image/jpeg'];
             const textUrl = `https://www.gutenberg.org/ebooks/${bookId}.txt.utf-8`;
@@ -28,10 +28,9 @@ module.exports = async function fetchData() {
 
 
             // console.log(bookData.authors)
-            title = title.replaceAll('$b', '');
 
             try {
-              const newBook = await Book.findOneAndUpdate({ bookId: bookId }, {
+              const newBook = await Book.create({
                 title: title,
                 bookId: bookId,
                 authors: bookData.authors,
@@ -40,17 +39,16 @@ module.exports = async function fetchData() {
                   contentType: 'image/jpeg',
                 },
                 text: text
-                // if it doesnt exist, create it
-              }, { new: true, upsert: true });
-
+              });
               // console.log('this is a new book:', newBook);
 
               // just so we see our code at work when we npm run the app:
-              // const newBookShortData = {
-              //   title: newBook.title,
-              //   bookId: newBook.bookId,
-              //   authors: newBook.authors,
-              // };
+              const newBookShortData = {
+                title: newBook.title,
+                bookId: newBook.bookId,
+                authors: newBook.authors,
+              };
+
               // console.log('info about book minus image & text bc they are long:', newBookShortData)
 
             } catch (error) {
@@ -73,9 +71,9 @@ module.exports = async function fetchData() {
     }
   }
   // Run the fetch cycle initially
-  // runGutFetchLoop();
+  runGutFetchLoop();
 
-  // Set up an interval to run the fetch cycle every week (in milliseconds)
-  const intervalInMilliseconds = 168 * 60 * 60 * 1000;
+  // Set up an interval to run the fetch cycle every 8 hours (in milliseconds)
+  const intervalInMilliseconds = 8 * 60 * 60 * 1000;
   setInterval(runGutFetchLoop, intervalInMilliseconds);
 }
