@@ -31,7 +31,7 @@ module.exports = async function fetchData() {
             title = title.replaceAll('$b', '');
 
             try {
-              const newBook = await Book.findOneAndUpdate({bookId:bookId},{
+              const newBook = await Book.findOneAndUpdate({ bookId: bookId }, {
                 title: title,
                 bookId: bookId,
                 authors: bookData.authors,
@@ -41,8 +41,8 @@ module.exports = async function fetchData() {
                 },
                 text: text
                 // if it doesnt exist, create it
-              }, { new:true, upsert:true });
-            
+              }, { new: true, upsert: true });
+
               // console.log('this is a new book:', newBook);
 
               // just so we see our code at work when we npm run the app:
@@ -79,4 +79,3 @@ module.exports = async function fetchData() {
   const intervalInMilliseconds = 168 * 60 * 60 * 1000;
   setInterval(runGutFetchLoop, intervalInMilliseconds);
 }
-
